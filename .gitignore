@@ -31,3 +31,12 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Spring Boot related files
+!**/src/main/**/application*.properties
+!**/src/main/**/application*.yml
+!**/src/main/**/logback-spring.xml
+!**/src/test/**/application*.properties
+!**/src/test/**/application*.yml
+!**/src/test/**/logback.xml
+!**/src/test/**/test.log
