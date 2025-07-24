@@ -8,6 +8,6 @@ public class ForoApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(ForoApplication.class, args);
+		System.out.println("La aplicación Spring Boot ha iniciado.");
 	}
-
 }
