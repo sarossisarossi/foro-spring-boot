@@ -3,6 +3,7 @@ package com.srossi.foro.controller;
 import com.srossi.foro.dto.TopicoListadoDatos;
 import com.srossi.foro.dto.TopicoRequest;
 import com.srossi.foro.dto.TopicoResponse;
+import com.srossi.foro.model.Topico;
 import com.srossi.foro.repository.TopicoRepository;
 import com.srossi.foro.service.TopicoService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,6 +18,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController //Indica que esta clase es un controlador de tipo REST. Combina @Controller y @ResponseBody, lo que significa que los métodos devolverán directamente datos (normalmente en formato JSON) como respuesta HTTP, en lugar de retornar una vista (HTML).
 @RequestMapping("/topicos") //Define la ruta base para todos los endpoints dentro del controlador. En este caso, cualquier endpoint dentro de esta clase comenzará con /topicos. Por ejemplo, el @PostMapping definido será accesible vía POST /topicos.
 @Tag(name = "Topicos", description = "API para gestionar tópicos")
@@ -26,6 +29,11 @@ public class TopicoController {
     private TopicoService topicoService;  //Indica a Spring que debe inyectar automáticamente la dependencia (en este caso, TopicoService). Esto permite que el controlador use el servicio sin tener que crear una instancia manualmente.
 
     private TopicoRepository topicoRepository;
+
+    @Autowired
+    public TopicoController(TopicoRepository topicoRepository) {
+        this.topicoRepository = topicoRepository;
+    }
     @PostMapping //Especifica que el méeodo registrar manejará solicitudes HTTP de tipo POST.
     //@RequestBody Indica que el parámetro request debe construirse a partir del cuerpo de la solicitud HTTP (normalmente JSON). Spring convierte automáticamente el JSON en una instancia de TopicoRequest.
     //@Valid Le dice a Spring que debe validar el objeto TopicoRequest antes de ejecutarse el meodo. Usa las anotaciones como @NotBlank o @NotNull dentro de TopicoRequest.
@@ -37,6 +45,13 @@ public class TopicoController {
     }
 
     @GetMapping
+    public List<TopicoListadoDatos> listar(){
+        List<Topico> topicos = topicoRepository.findAll();
+        System.out.println("Cantidad de tópicos: " + topicos.size());
+        return topicoRepository.findAll().stream().map(TopicoListadoDatos::new).toList();
+    }
+
+    @GetMapping("/test")
     public ResponseEntity<Page<TopicoListadoDatos>> listar(
             @RequestParam(required = false) String curso,
             @RequestParam(required = false) Integer anio,

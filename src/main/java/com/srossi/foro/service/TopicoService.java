@@ -1,5 +1,6 @@
 package com.srossi.foro.service;
 
+import com.srossi.foro.dto.TopicoListadoDatos;
 import com.srossi.foro.dto.TopicoRequest;
 import com.srossi.foro.dto.TopicoResponse;
 import com.srossi.foro.model.Curso;
@@ -10,7 +11,11 @@ import com.srossi.foro.repository.TopicoRepository;
 import com.srossi.foro.repository.UsuarioRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 public class TopicoService {
@@ -41,6 +46,7 @@ public class TopicoService {
                 .autor(autor)
                 .curso(curso)
                 .status(request.status())
+                .fechaCreacion(LocalDateTime.now())
                 .build();
 
         topicoRepository.save(topico);
@@ -53,4 +59,37 @@ public class TopicoService {
                 topico.getStatus()
         );
     }
+
+    public Page<TopicoListadoDatos> listarTopicos(Pageable pagina) {
+        Page<Topico> topicos = topicoRepository.findAll(pagina);
+
+        return topicos.map(topico -> new TopicoListadoDatos(
+                topico.getId(),
+                topico.getTitulo(),
+                topico.getMensaje(),
+                topico.getFechaCreacion(),
+                topico.getStatus(),
+                topico.getAutor().getNombre(),
+                topico.getCurso().getNombre()
+        ));
+    }
+
+
+
+    public Page<TopicoListadoDatos> listarPorCurso(String curso, Pageable pageable) {
+        Page<Topico> topicosFiltrados = topicoRepository.findByCursoNombre(curso, pageable);
+
+        return topicosFiltrados.map(topico -> new TopicoListadoDatos(
+                topico.getId(),
+                topico.getTitulo(),
+                topico.getMensaje(),
+                topico.getFechaCreacion(),
+                topico.getStatus(),
+                topico.getAutor().getNombre(),
+                topico.getCurso().getNombre()
+        ));
+    }
+
+    public Page<TopicoListadoDatos> listarPorCursoYAnio(String curso, Integer anio, Pageable pageable) {
+        return null;}
 }
