@@ -14,8 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDateTime;
+import java.util.NoSuchElementException;
 
 @Service
 public class TopicoService {
@@ -92,4 +96,13 @@ public class TopicoService {
 
     public Page<TopicoListadoDatos> listarPorCursoYAnio(String curso, Integer anio, Pageable pageable) {
         return null;}
+
+    public Topico buscarPorId(Long id) {
+        return topicoRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Tópico no encontrado"));
+    }
+
+
+    public TopicoListadoDatos  actualizar(Long id, com.srossi.foro.domain.topico.@Valid DatosActualizarTopico datos) {
+    }
 }

@@ -29,7 +29,9 @@ public class TopicoController {
     private TopicoService topicoService;  //Indica a Spring que debe inyectar automáticamente la dependencia (en este caso, TopicoService). Esto permite que el controlador use el servicio sin tener que crear una instancia manualmente.
 
     private TopicoRepository topicoRepository;
-
+    //Esa es una inyección de dependencias mediante constructor. En palabras simples:
+    //
+    //Le estás diciendo a Spring: “Cuando crees una instancia de este TopicoController, pásame automáticamente una instancia de TopicoRepository para que yo la pueda usar.”
     @Autowired
     public TopicoController(TopicoRepository topicoRepository) {
         this.topicoRepository = topicoRepository;
@@ -51,23 +53,26 @@ public class TopicoController {
         return topicoRepository.findAll().stream().map(TopicoListadoDatos::new).toList();
     }
 
-    @GetMapping("/test")
-    public ResponseEntity<Page<TopicoListadoDatos>> listar(
-            @RequestParam(required = false) String curso,
-            @RequestParam(required = false) Integer anio,
-            @PageableDefault(size = 10, sort = "fechaCreacion", direction = Sort.Direction.ASC) Pageable pageable
-    ) {
-        Page<TopicoListadoDatos> topicos;
+//    @GetMapping("/a{id}")
+//    public ResponseEntity<TopicoListadoDatos> detalle(@PathVariable Long id) {
+//        var topico = topicoRepository.findById(id);
+//        if (topico.isPresent()) {
+//            return ResponseEntity.ok(new TopicoListadoDatos(topico.get()));
+//        } else {
+//            return ResponseEntity.notFound().build();
+//        }
+//    }
 
-        if (curso != null && anio != null) {
-            topicos = topicoService.listarPorCursoYAnio(curso, anio, pageable);
-        } else if (curso != null) {
-            topicos = topicoService.listarPorCurso(curso, pageable);
-        } else {
-            topicos = topicoService.listarTopicos(pageable);
-        }
+    @GetMapping("/{id}")
+    public TopicoListadoDatos obtenerTopicoPorId(@PathVariable Long id) {
+        Topico topico = topicoService.buscarPorId(id);
+        return new TopicoListadoDatos(topico);
+    }
 
-        return ResponseEntity.ok(topicos);
+    @PutMapping("/{id}")
+    public ResponseEntity<?> actualizar(@PathVariable Long id, @RequestBody @Valid com.srossi.foro.domain.topico.DatosActualizarTopico datos) {
+        var actualizado = topicoService.actualizar(id, datos);
+        return ResponseEntity.ok(actualizado);
     }
 
     @GetMapping("/ping")
