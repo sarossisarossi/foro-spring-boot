@@ -1,10 +1,13 @@
 package com.srossi.foro.infraestructura.errores;
 
+import com.srossi.foro.dto.DatosError;
+import com.srossi.foro.infra.errores.RecursoNoEncontradoException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 
 @ControllerAdvice
@@ -27,5 +30,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body("El tópico con el ID proporcionado no existe.");
+    }
+
+    @ExceptionHandler(RecursoNoEncontradoException.class)
+    public ResponseEntity<DatosError> manejarRecursoNoEncontrado(RecursoNoEncontradoException ex) {
+        DatosError error = new DatosError(
+                HttpStatus.NOT_FOUND.value(),
+                ex.getMessage(),
+                LocalDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 }

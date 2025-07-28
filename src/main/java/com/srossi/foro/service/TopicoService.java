@@ -1,14 +1,18 @@
 package com.srossi.foro.service;
 
 import com.srossi.foro.dto.TopicoListadoDatos;
+import com.srossi.foro.dto.DatosActualizarTopico;
 import com.srossi.foro.dto.TopicoRequest;
 import com.srossi.foro.dto.TopicoResponse;
+import com.srossi.foro.infra.errores.RecursoNoEncontradoException;
 import com.srossi.foro.model.Curso;
 import com.srossi.foro.model.Topico;
 import com.srossi.foro.model.Usuario;
 import com.srossi.foro.repository.CursoRepository;
 import com.srossi.foro.repository.TopicoRepository;
 import com.srossi.foro.repository.UsuarioRepository;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 public class TopicoService {
@@ -102,7 +107,25 @@ public class TopicoService {
                 .orElseThrow(() -> new NoSuchElementException("Tópico no encontrado"));
     }
 
+    @Transactional
+    public boolean  actualizar(Long id, DatosActualizarTopico datos) {
+        Optional<Topico> topicoOptional = topicoRepository.findById(id);
 
-    public TopicoListadoDatos  actualizar(Long id, com.srossi.foro.domain.topico.@Valid DatosActualizarTopico datos) {
+        if (topicoOptional.isPresent()) {
+            Topico topico = topicoOptional.get();
+            topico.setTitulo(datos.titulo());
+            topico.setMensaje(datos.mensaje());
+            topicoRepository.save(topico);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void eliminarTopico(Long id) {
+        if (!topicoRepository.existsById(id)) {
+            throw new RecursoNoEncontradoException("Tópico con id " + id + " no encontrado.");
+        }
+        topicoRepository.deleteById(id);
     }
 }

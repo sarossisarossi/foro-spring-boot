@@ -1,5 +1,6 @@
 package com.srossi.foro.controller;
 
+import com.srossi.foro.dto.DatosActualizarTopico;
 import com.srossi.foro.dto.TopicoListadoDatos;
 import com.srossi.foro.dto.TopicoRequest;
 import com.srossi.foro.dto.TopicoResponse;
@@ -70,10 +71,26 @@ public class TopicoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> actualizar(@PathVariable Long id, @RequestBody @Valid com.srossi.foro.domain.topico.DatosActualizarTopico datos) {
-        var actualizado = topicoService.actualizar(id, datos);
-        return ResponseEntity.ok(actualizado);
+    public ResponseEntity<?> actualizar(@PathVariable Long id, @RequestBody @Valid DatosActualizarTopico datos) {
+        try {
+            boolean actualizado = topicoService.actualizar(id, datos);
+            if (actualizado) {
+                return ResponseEntity.ok("Registro actualizado OK");
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ID no encontrado");
+            }
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().body("El ID debe ser un número");
+        }
+
     }
+
+    @DeleteMapping("/topicos/{id}")
+    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+        topicoService.eliminarTopico(id);
+        return ResponseEntity.noContent().build(); // 204
+    }
+
 
     @GetMapping("/ping")
     public String ping() {

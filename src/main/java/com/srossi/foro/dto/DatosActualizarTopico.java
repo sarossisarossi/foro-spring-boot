@@ -1,4 +1,4 @@
-package com.srossi.foro.domain.topico;
+package com.srossi.foro.dto;
 
 
 
