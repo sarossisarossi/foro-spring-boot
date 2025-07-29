@@ -85,7 +85,7 @@ public class TopicoController {
 
     }
 
-    @DeleteMapping("/topicos/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         topicoService.eliminarTopico(id);
         return ResponseEntity.noContent().build(); // 204
