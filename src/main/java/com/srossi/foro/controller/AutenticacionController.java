@@ -1,6 +1,9 @@
 package com.srossi.foro.controller;
 
 import com.srossi.foro.dto.DatosAutenticacion;
+import com.srossi.foro.dto.DatosTokenJWT;
+import com.srossi.foro.model.Usuario;
+import com.srossi.foro.service.TokenService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,14 +17,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/login")
 public class AutenticacionController {
+
+    @Autowired
+    private TokenService tokenService;
     @Autowired
     private AuthenticationManager manager;
 
     @PostMapping
     public ResponseEntity iniciarSecion(@RequestBody @Valid DatosAutenticacion datos){
-        var token = new UsernamePasswordAuthenticationToken(datos.correoElectronico(),datos.contrasena());
-        var autenticacion = manager.authenticate(token);
+        var authenticatonToken = new UsernamePasswordAuthenticationToken(datos.correoElectronico(),datos.contrasena());
+        var autenticacion = manager.authenticate(authenticatonToken);
 
-        return ResponseEntity.ok().build();
+        var tokenJWT = tokenService.generarToken((Usuario) autenticacion.getPrincipal());
+        return ResponseEntity.ok(new DatosTokenJWT(tokenJWT));
     }
 }

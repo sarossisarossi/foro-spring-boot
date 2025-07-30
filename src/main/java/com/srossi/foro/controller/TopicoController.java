@@ -17,6 +17,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +26,7 @@ import java.util.List;
 @RestController //Indica que esta clase es un controlador de tipo REST. Combina @Controller y @ResponseBody, lo que significa que los métodos devolverán directamente datos (normalmente en formato JSON) como respuesta HTTP, en lugar de retornar una vista (HTML).
 @RequestMapping("/topicos") //Define la ruta base para todos los endpoints dentro del controlador. En este caso, cualquier endpoint dentro de esta clase comenzará con /topicos. Por ejemplo, el @PostMapping definido será accesible vía POST /topicos.
 @Tag(name = "Topicos", description = "API para gestionar tópicos")
+@PreAuthorize("hasRole('USER')")
 public class TopicoController {
 
     @Autowired
@@ -96,5 +99,15 @@ public class TopicoController {
     public String ping() {
         System.out.println("Ping endpoint called");
         return "pong";
+    }
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/me")
+    public ResponseEntity<?> quienSoy() {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            return ResponseEntity.status(401).body("NO AUTENTICADO");
+        }
+
+        return ResponseEntity.ok("Autenticado como: " + auth.getName() + " con roles: " + auth.getAuthorities());
     }
 }
