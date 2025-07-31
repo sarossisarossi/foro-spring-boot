@@ -36,7 +36,7 @@ public class SecurityFilter extends OncePerRequestFilter {
         // continua la cadena
         if (tokenJWT !=null) {
             var subject = tokenService.getSubject(tokenJWT);
-            System.out.println("SUBJECT DEL TOKEN: " + subject);
+            //System.out.println("SUBJECT DEL TOKEN: " + subject);
             var usuario = usuarioRepository.findByCorreoElectronico(subject);
             if (usuario == null) {
                 System.out.println("USUARIO NO ENCONTRADO EN BD PARA EL SUBJECT");
@@ -45,11 +45,11 @@ public class SecurityFilter extends OncePerRequestFilter {
             }
             var authentication = new UsernamePasswordAuthenticationToken(usuario, null,usuario.getAuthorities());
             // este codigo indica que esta logeado
-            System.out.println(authentication);
+            //System.out.println(authentication);
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            System.out.println("Usuario logeado");
-            System.out.println("Authorization header: " + request.getHeader("Authorization"));
-            System.out.println("Authorities: " + usuario.getAuthorities());
+            //System.out.println("Usuario logeado");
+            //System.out.println("Authorization header: " + request.getHeader("Authorization"));
+            //System.out.println("Authorities: " + usuario.getAuthorities());
         }
         //System.out.println(subject);
 

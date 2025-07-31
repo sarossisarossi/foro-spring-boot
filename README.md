@@ -1,6 +1,6 @@
 # 📘 API del Foro en Spring Boot
 
-Este proyecto es una API RESTful desarrollada con Spring Boot. Permite la gestión de tópicos, incluyendo creación, visualización, actualización y eliminación.
+Este proyecto es una API RESTful desarrollada con Spring Boot. Permite la gestión de tópicos, incluyendo creación, visualización, actualización y eliminación. Ahora incluye autenticación y autorización basada en tokens JWT, lo que restringe el acceso a ciertos endpoints.
 
 ## 🧪 Tecnologías utilizadas
 
@@ -8,16 +8,22 @@ Este proyecto es una API RESTful desarrollada con Spring Boot. Permite la gesti�
 - Spring Boot
 - Spring Web
 - Spring Data JPA
+- Spring Security
 - H2 Database (modo local)
 - Springdoc OpenAPI (Swagger)
+- JSON Web Tokens (JWT)
 
-## 🔗 Documentación Swagger
+## 🔐 Seguridad
 
-Puedes acceder a la documentación Swagger generada automáticamente por Springdoc en:
+La API ahora cuenta con seguridad mediante autenticación basada en JWT. Los endpoints están protegidos, y solo los usuarios autenticados pueden acceder a los recursos principales.
 
-[👉 Swagger UI](http://localhost:8081/swagger-ui/index.html)
+### Endpoints públicos (sin token)
 
-## 🚀 Endpoints principales
+| Método | URI       | Descripción             |
+|--------|-----------|-------------------------|
+| POST   | /login    | Autenticación de usuario|
+
+### Endpoints protegidos (requiere token JWT)
 
 | Método | URI                  | Descripción               |
 |--------|----------------------|---------------------------|
@@ -26,7 +32,11 @@ Puedes acceder a la documentación Swagger generada automáticamente por Springd
 | PUT    | /topicos             | Actualiza un tópico       |
 | DELETE | /topicos/{id}        | Elimina un tópico         |
 
-## 📦 Cómo correr el proyecto
+### Cómo usar el token JWT
 
-```bash
-./mvnw spring-boot:run
+1. Haz una petición `POST` a `/login` con tus credenciales.
+2. Recibirás un token JWT en la respuesta.
+3. Usa ese token en el header de tus siguientes peticiones:
+
+```http
+Authorization: Bearer <token>
